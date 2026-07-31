@@ -162,3 +162,22 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# 忽略 IDEA 自身生成的文件夹
+.idea/
+
+# 忽略模块文件
+*.iml
+
+# 忽略编译输出目录
+out/
+target/
+
+# 忽略本地私有配置文件（这几行最关键）
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries/
+.idea/shelf/
+
+# 忽略本地环境变量文件
+local.properties

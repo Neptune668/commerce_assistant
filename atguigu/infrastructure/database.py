@@ -3,7 +3,7 @@ import asyncio
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncEngine, AsyncSession
 
-from atguigu.config.config import settings
+from atguigu.conf.config import settings
 
 # 定义全局的引擎engine
 # 定义全局的session工厂

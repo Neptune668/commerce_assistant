@@ -18,6 +18,7 @@ class Settings(BaseSettings):
 
     # 数据库
     database_url: str
+    database_url_sync: str
 
     # 服务器
     app_host: str

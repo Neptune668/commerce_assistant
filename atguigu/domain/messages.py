@@ -41,6 +41,11 @@ class BotMessage(BaseModel):
     text: str | None = None # 机器人回复的话
     object: FocusedObject | None = None # 机器人返回的对象
 
+class ProcessResult(BaseModel):
+    sender_id: str  # 用户ID
+    message_id: str  # 消息ID(内部生成)
+    messages: list[BotMessage]  # 回复消息（机器人回复的所有消息都给前端）
+
 if __name__ == '__main__':
     fo = FocusedObject(id="1", type="order", title="纯棉T恤")
 
@@ -53,7 +58,7 @@ if __name__ == '__main__':
     print(data)
     print(type(data))
 
-    # 将字典转成json字符串
+    # 将对象转成json字符串
     json_str = fo.model_dump_json()
     print(json_str)
     print(type(json_str))

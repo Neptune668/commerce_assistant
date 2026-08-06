@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 
 from atguigu.api.routers.dependencies import get_dialogue_service
 from atguigu.api.schemas import ChatRequest, ChatResponse, ChatBotMessage, ChatObject, HistoryResponse, HistoryMessage
@@ -36,14 +36,12 @@ def _build_user_message(chat_request: ChatRequest) -> UserMessage:
         type=MessageType.TEXT if chat_request.text else MessageType.OBJECT,
         text=chat_request.text,
         # 解构时目标对象必须是mapping（例如dict），使用model_dump()将对象转成字典
-        object=FocusedObject(**chat_request.object.model_dump()) if chat_request.object else None
+        object=FocusedObject(**chat_request.object.model_dump(mode="json")) if chat_request.object else None
     )
 
 
 def _build_chat_response(process_result: ProcessResult) -> ChatResponse:
-
     return ChatResponse(
-
         sender_id=process_result.sender_id,
         message_id=process_result.message_id,
 
@@ -51,14 +49,17 @@ def _build_chat_response(process_result: ProcessResult) -> ChatResponse:
             ChatBotMessage(
                 text=bot_msg.text,
                 # 解构时目标对象必须是mapping（例如dict），使用model_dump()将对象转成字典
-                object=ChatObject(**bot_msg.object.model_dump()) if bot_msg.object else None
+                object=ChatObject(**bot_msg.object.model_dump(mode="json")) if bot_msg.object else None
             )
             for bot_msg in process_result.messages
         ]
     )
 
 @router.get("/api/chat/history")
-async def get_history(sender_id: str) -> HistoryResponse:
+# request: Request 当uvicorn启动时 Request 对象会被自动注入
+async def get_history(sender_id: str, request: Request) -> HistoryResponse:
+    print(request.app.state.abc)
+    # print(request.app.state.engine)
 
     return HistoryResponse(
         sender_id=sender_id,

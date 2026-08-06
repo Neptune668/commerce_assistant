@@ -18,11 +18,15 @@ from atguigu.infrastructure.database import init_db_engine, close_db_engine
 # FastAPI应用的生命周期管理器
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # app：可以挂载一些信息
 
     print("服务启动....")
+    # app.state : 全局状态
+    app.state.abc = "abc"
+
     # 初始化数据库连接资源
+    # engine = init_db_engine() # async_session已经初始化
     init_db_engine() # async_session已经初始化
+    # app.state.engine = engine
 
     yield # 开始接收FastAPI的请求
 

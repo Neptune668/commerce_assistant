@@ -35,6 +35,9 @@ def init_db_engine():
     # expire_on_commit=False 默认值是True, 异步场景不起作用会报错,因此需要设置成False
     async_session = async_sessionmaker(engine, expire_on_commit=False)
 
+    # return engine
+
+
 # 关闭资源
 async def close_db_engine():
 

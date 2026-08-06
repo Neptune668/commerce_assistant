@@ -182,7 +182,7 @@ class DialogueState(BaseModel):
         :return:
         """
         for session in self.sessions:
-            if session.id == self.current_session_id:
+            if session.session_id == self.current_session_id:
                 return session
 
         return None
@@ -228,7 +228,7 @@ class DialogueState(BaseModel):
         self.paused_tasks = []
         self.focused_object = None
         self.pending_turn = None
-        self.current_session_id = None
+        # self.current_session_id = None
 
     # =================================turn相关=================================
 

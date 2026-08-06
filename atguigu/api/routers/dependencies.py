@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -5,11 +7,14 @@ from atguigu.engine.dialogue_engine import DialogueEngine
 
 # 必须通过这种方式引入database，需要的时候再获取： database.async_session()
 from atguigu.infrastructure import database
+from atguigu.plan.turn_planner import TurnPlanner
 
 # 不要通过这种方式引入async_session，会是一个NoneType
 # from atguigu.infrastructure.database import async_session
 from atguigu.repository.dialogue_state_repository import DialogueStateRepository
 from atguigu.service.dialogue_service import DialogueService
+from atguigu.task.flow.loader import FlowLoader
+from atguigu.task.handler import TaskHandler
 
 """
 1. 请求从前端交给FastAPI，FastAPI作为Web层调用Service层
@@ -39,7 +44,16 @@ async def get_dialogue_state_repository(session: AsyncSession = Depends(get_sess
 
 # 创建引擎实例
 async def get_engine():
-    return DialogueEngine()
+    base_path = Path(__file__).parents[3]
+    user_flow_path = base_path / "flow_config" / "user_flows.yml"
+    system_flow_path = base_path / "flow_config" / "system_flows.yml"
+    loader = FlowLoader()
+    flows_list = loader.load_many([user_flow_path, system_flow_path])
+
+    return DialogueEngine(
+        turn_planner=TurnPlanner(),
+        task_handler=TaskHandler(flows=flows_list)
+    )
 
 # 创建Service的实例
 async def get_dialogue_service(

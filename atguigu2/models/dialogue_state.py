@@ -1,10 +1,10 @@
 from sqlalchemy import TEXT
-from sqlalchemy.orm import MappedColumn, Mapped
+from sqlalchemy.orm import mapped_column, Mapped
 
 from atguigu2.models.base import Base
 
 
-class DialogueState(Base):
+class DialogueStateRecord(Base):
     __tablename__ = "dialogue_states"
-    sender_id: Mapped[str] = MappedColumn(primary_key=True)
-    state_json: Mapped[str] = MappedColumn(TEXT, nullable=False, default={})  # 数据库长文本类型
+    sender_id: Mapped[str] = mapped_column(primary_key=True)
+    state_json: Mapped[str] = mapped_column(TEXT, nullable=False, default={})  # 数据库长文本类型 # 数据库长文本类型

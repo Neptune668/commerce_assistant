@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel
@@ -40,6 +41,21 @@ class TurnPlan(BaseModel):
             knowledge=KnowledgeTurnPlan.from_dict(data["knowledge"]) if data.get("knowledge") else None,
             chitchat=ChitchatTurnPlan() if data.get("chitchat") is not None else None
         )
+
+class ClarifyReason(str, Enum):
+    MISSING_TRACK = "missing_track" # 三条轨道都是null
+    MULTIPLE_TRACKS = "multiple_tracks" # 填充了两条或以上数量的轨道
+    MISSING_TASK_COMMANDS = "missing_task_commands" # 有Task但是没有Command
+    MISSING_KNOWLEDGE_INTENT = "missing_knowledge_intent" # 有Knowledge但是没有Intent
+    MISSING_FOCUSED_OBJECT = "missing_focused_object" # 知识意图需要聚焦对象，但当前没有或不匹配
+    OBJECT_REQUIRES_INTENT = "object_requires_intent" # 用户只发了对象，没说要干嘛
+    INVALID_TASK_COMMANDS = "invalid_task_commands" # 模型编了一个Command
+    MULTIPLE_TASK_FLOWS = "multiple_task_flows" # 不能同时开启多个任务
+    UNKNOWN_TASK_FLOW = "unknown_task_flow" # 模型编了一个Flow
+
+class TurnPlanValidationResult(BaseModel):
+    valid: bool # 是否有效
+    reason: ClarifyReason | None = None #无效时的原因
 
 
 if __name__ == '__main__':

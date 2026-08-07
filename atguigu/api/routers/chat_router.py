@@ -41,7 +41,9 @@ def _build_user_message(chat_request: ChatRequest) -> UserMessage:
 
 
 def _build_chat_response(process_result: ProcessResult) -> ChatResponse:
+
     return ChatResponse(
+
         sender_id=process_result.sender_id,
         message_id=process_result.message_id,
 

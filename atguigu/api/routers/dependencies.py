@@ -3,11 +3,15 @@ from pathlib import Path
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from atguigu.clarify.responder import ClarifyResponder
 from atguigu.engine.dialogue_engine import DialogueEngine
 
 # 必须通过这种方式引入database，需要的时候再获取： database.async_session()
 from atguigu.infrastructure import database
+from atguigu.knowledge.handler import KnowledgeHandler
+from atguigu.knowledge.intents import KNOWLEDGE_INTENTS
 from atguigu.plan.turn_planner import TurnPlanner
+from atguigu.plan.turn_validator import TurnPlanValidator
 
 # 不要通过这种方式引入async_session，会是一个NoneType
 # from atguigu.infrastructure.database import async_session
@@ -52,7 +56,10 @@ async def get_engine():
 
     return DialogueEngine(
         turn_planner=TurnPlanner(),
-        task_handler=TaskHandler(flows=flows_list)
+        task_handler=TaskHandler(flows=flows_list),
+        knowledge_handler=KnowledgeHandler(knowledge_intends=KNOWLEDGE_INTENTS),
+        clarify_responder=ClarifyResponder(),
+        turn_plan_validator=TurnPlanValidator(),
     )
 
 # 创建Service的实例

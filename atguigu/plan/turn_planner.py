@@ -6,9 +6,11 @@ from langchain_core.prompts import PromptTemplate
 
 from atguigu.domain.state import DialogueState
 from atguigu.infrastructure.llm import llm
+from atguigu.knowledge.intents import KnowledgeIntent
 from atguigu.plan.models import TurnPlan
 from atguigu.prompts.history_builder import HistoryBuilder
 from atguigu.prompts.loader import load_prompt
+from atguigu.task.flow.flows import FlowsList
 
 
 class TurnPlanner:
@@ -17,11 +19,15 @@ class TurnPlanner:
     作用：根据自然语言 调用LLM 分析轨道类型
     """
 
-    async def predict(self, dialogue_state, flow_list) -> TurnPlan:
+    async def predict(
+            self,
+            dialogue_state: DialogueState,
+            flow_list: FlowsList,
+            intends: Dict[str, KnowledgeIntent]) -> TurnPlan:
 
         # 1. 构建提示词模板中的占位的内容（七部分）
-        inputs_prompt = self._build_prompt_inputs(dialogue_state, flow_list)
-        print(inputs_prompt)
+        inputs_prompt = self._build_prompt_inputs(dialogue_state, flow_list, intends)
+        # print(inputs_prompt)
 
 
         # 2. 调用模确定用户意图，生成TurnPlan对象
@@ -29,7 +35,11 @@ class TurnPlanner:
 
         return turn_plan
 
-    def _build_prompt_inputs(self, dialogue_state: DialogueState, flow_list):
+    def _build_prompt_inputs(
+            self,
+            dialogue_state: DialogueState,
+            flow_list: FlowsList,
+            intends: Dict[str, KnowledgeIntent]):
 
         # 1. 用户问题
         user_msg = HistoryBuilder._render_user_message(dialogue_state.pending_turn.user_message)
@@ -61,6 +71,12 @@ class TurnPlanner:
         }
         available_flows_json = json.dumps(flows_dict, ensure_ascii= False)
 
+        # 7. 知识意图清单
+        intends_dict = {
+            "intends": [{"id":intend.id, "description": intend.description} for intend in intends.values()]
+        }
+        knowledge_intents_json = json.dumps(intends_dict, ensure_ascii= False)
+
         return {
             "user_message": user_msg,
             "current_conversation": current_conversation,
@@ -68,7 +84,7 @@ class TurnPlanner:
             "interrupted_tasks_json": interrupted_tasks_json,
             "focused_object_json": focused_object_json,
             "available_flows_json": available_flows_json,
-            "knowledge_intents_json": ""  # TODO
+            "knowledge_intents_json": knowledge_intents_json
         }
 
     async def _predict_from_inputs(self, inputs_prompt: dict[str, Any])->TurnPlan:

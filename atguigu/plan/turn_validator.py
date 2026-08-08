@@ -48,7 +48,7 @@ class TurnPlanValidator:
 
     @staticmethod
     def _active_tracks(turn_plan: TurnPlan) -> list[str]:
-
+        #计算命中了几个轨道
         active_tracks: list[str] = []
         if turn_plan.task is not None:
             active_tracks.append("task")
@@ -61,6 +61,8 @@ class TurnPlanValidator:
 
     @staticmethod
     def _reject(reason: ClarifyReason) -> TurnPlanValidationResult:
+        #返回校验失败结果，封装一个 `valid=False` 和原因码。
+        # 不生成话术，把"怎么跟用户说"留给 `ClarifyResponder`
         return TurnPlanValidationResult(
             valid=False,
             reason=reason
@@ -70,6 +72,9 @@ class TurnPlanValidator:
         """
         task轨道的四重判断
         :param turn_plan:
+        这是**最典型的防幻觉检查**。LLM 可能编出一个 YAML 里根本没定义的 flow id。
+        比如把 `refund_request` 写成 `refund` 或 `tuikuan`。
+        这里用 `flows.get_flow_by_id` 去**真实的流程列表**里查证。查不到，说明是幻觉，拒绝。
         :param flow_list:
         :return:
         """

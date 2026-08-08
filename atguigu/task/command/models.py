@@ -15,7 +15,7 @@ class Command(BaseModel):
 
 class StartFlowCommand(Command):
     """开始任务"""
-    flow: str # 流程的名字
+    flow: str # 流程的id
 
 class SetSlotsCommand(Command):
     """收集槽位"""
@@ -27,7 +27,7 @@ class CancelFlowCommand(Command):
 
 class ResumeFlowCommand(Command):
     """恢复任务"""
-    flow: str # 流程的名字
+    flow: str | None = None # 流程的名字
 
 COMMAND_NAME_TO_CLASS = {
     "start_flow": StartFlowCommand,

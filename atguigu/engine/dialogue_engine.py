@@ -166,8 +166,6 @@ class DialogueEngine:
         :return:
         """
 
-
-
         # 1. 获取聚焦对象
         focused_object = message.object
         if focused_object is None:

@@ -17,6 +17,7 @@ from atguigu.plan.turn_validator import TurnPlanValidator
 # from atguigu.infrastructure.database import async_session
 from atguigu.repository.dialogue_state_repository import DialogueStateRepository
 from atguigu.service.dialogue_service import DialogueService
+from atguigu.task.command.processor import CommandProcessor
 from atguigu.task.flow.loader import FlowLoader
 from atguigu.task.handler import TaskHandler
 
@@ -56,7 +57,7 @@ async def get_engine():
 
     return DialogueEngine(
         turn_planner=TurnPlanner(),
-        task_handler=TaskHandler(flows=flows_list),
+        task_handler=TaskHandler(flows=flows_list, command_processor=CommandProcessor()),
         knowledge_handler=KnowledgeHandler(knowledge_intends=KNOWLEDGE_INTENTS),
         clarify_responder=ClarifyResponder(),
         turn_plan_validator=TurnPlanValidator(),

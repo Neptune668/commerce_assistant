@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from atguigu.api.routers.chat_router import router
 from atguigu.infrastructure.database import init_db_engine, close_db_engine
+from atguigu.infrastructure.http_client import init_http_client, close_http_client
 
 """
 1. 启动服务： uvicorn启动
@@ -27,10 +28,12 @@ async def lifespan(app: FastAPI):
     # engine = init_db_engine() # async_session已经初始化
     init_db_engine() # async_session已经初始化
     # app.state.engine = engine
+    init_http_client()
 
     yield # 开始接收FastAPI的请求
 
     await close_db_engine()
+    await close_http_client()
     print("服务停止...")
 
 

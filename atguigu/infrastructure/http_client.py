@@ -1,4 +1,5 @@
 import asyncio
+from urllib.parse import quote
 
 import httpx
 
@@ -41,4 +42,13 @@ if __name__ == '__main__':
         print(result.json())
         await  close_http_client()
 
-    asyncio.run(test())
+    async def test_get_order():
+        init_http_client()
+        order_id = "A20260410001"
+        result = await http_client.get(f'http://localhost:18081/orders/{quote(order_id, safe="")}')
+
+        data = result.json()
+        print(data)
+        await  close_http_client()
+
+    asyncio.run(test_get_order())

@@ -1,5 +1,4 @@
-from langgraph.types import interrupt
-
+# atguigu/task/command/processor.py
 from atguigu.domain.contexts import StartedSystemContext, InterruptedSystemContext, ResumedSystemContext, \
     CanceledSystemContext, TaskContext
 from atguigu.domain.state import DialogueState
@@ -236,21 +235,27 @@ class CommandProcessor:
 
         # ===================阶段1：找到要恢复的流程===================
         if command.flow is not None:
+            # 指名恢复:用户明确说了恢复哪个
             target_flow = flows.get_flow_by_id(command.flow)
             if target_flow is None:
                 raise ValueError(f"未知流程 {command.flow}")
 
+            # 确定要恢复的任务
             target_flow_id = command.flow
             target_flow_name = target_flow.name
         else:
-
+            # 不指名恢复:用户只说"继续刚才的" → 取暂停栈栈顶(最近挂起的)
             if not state.paused_tasks:
                 return
+
+            # 确定要恢复的任务
             top_paused = state.paused_tasks[-1]
             target_flow_id = top_paused.flow_id
             target_flow_name = self._readable_flow_name(target_flow_id, flows)
 
         # ===================阶段2：恢复流程===================
+
+        # 获取激活的任务
         active_task = state.active_task
 
         # 有激活任务
@@ -260,6 +265,7 @@ class CommandProcessor:
             if active_task.flow_id == target_flow_id:
                 return
 
+            # 获取要被打断的任务的基本信息
             interrupted_flow_id = active_task.flow_id
             interrupted_flow_name = self._readable_flow_name(interrupted_flow_id, flows)
 
@@ -281,10 +287,12 @@ class CommandProcessor:
 
         # 没有激活任务
         else:
+
+            # 如果恢复失败则退出（例如，用户指定了一个没有挂起的任务）
             if not state.resumed_active_task(target_flow_id):
                 return
 
-            # 激活恢复任务的系统过场
+            # 分支4：激活恢复任务的系统过场
             self._activate_resumed_system_flow(
                 state, flows,
                 target_flow_id, target_flow_name

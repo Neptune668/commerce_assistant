@@ -32,6 +32,7 @@ class Settings(BaseSettings):
 def get_settings():
     print("初始化Settings")
     return Settings()
+
 settings = get_settings()
 
 # 预加载

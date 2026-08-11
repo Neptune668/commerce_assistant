@@ -1,0 +1,8 @@
+# IDE和编辑器目录
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

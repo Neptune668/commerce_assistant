@@ -42,7 +42,7 @@ class TurnPlanner:
             intends: Dict[str, KnowledgeIntent]):
 
         # 1. 用户问题
-        user_msg = HistoryBuilder._render_user_message(dialogue_state.pending_turn.user_message)
+        user_msg = HistoryBuilder.render_user_message(dialogue_state.pending_turn.user_message)
         # 2. 对话历史
         current_conversation = HistoryBuilder.build(dialogue_state.current_session().turns[-10:])
         # 3. 当前活跃任务

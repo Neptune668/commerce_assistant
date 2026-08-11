@@ -37,6 +37,14 @@ class HistoryBuilder:
             return HistoryBuilder._render_obj_msg(user_message.object)
 
     @staticmethod
+    def render_user_message(user_message: UserMessage):
+        HistoryBuilder._render_user_message(user_message)
+
+    @staticmethod
+    def render_user_message(user_message: UserMessage):
+        HistoryBuilder._render_user_message(user_message)
+
+    @staticmethod
     def _render_bot_message(bot_msg: BotMessage):
 
         if bot_msg.text:

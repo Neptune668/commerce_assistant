@@ -14,9 +14,11 @@ from atguigu.plan.turn_planner import TurnPlanner
 from atguigu.plan.turn_validator import TurnPlanValidator
 
 # 不要通过这种方式引入async_session，会是一个NoneType
-# from atguigu.infrastructure.database import async_session
 from atguigu.repository.dialogue_state_repository import DialogueStateRepository
 from atguigu.service.dialogue_service import DialogueService
+from atguigu.task.action.builder import build_action_runner
+from atguigu.task.action.registry import ActionRegistry
+from atguigu.task.action.runner import ActionRunner
 from atguigu.task.command.processor import CommandProcessor
 from atguigu.task.flow.loader import FlowLoader
 from atguigu.task.handler import TaskHandler
@@ -56,8 +58,9 @@ async def get_engine():
     flows_list = loader.load_many([user_flow_path, system_flow_path])
 
     return DialogueEngine(
+
         turn_planner=TurnPlanner(),
-        task_handler=TaskHandler(flows=flows_list, command_processor=CommandProcessor()),
+        task_handler=TaskHandler(flows=flows_list, command_processor=CommandProcessor(), action_runner=build_action_runner()),
         knowledge_handler=KnowledgeHandler(knowledge_intends=KNOWLEDGE_INTENTS),
         clarify_responder=ClarifyResponder(),
         turn_plan_validator=TurnPlanValidator(),

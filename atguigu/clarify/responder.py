@@ -21,7 +21,7 @@ class ClarifyResponder:
         # 阶段2：根据提示词模板以及会话上下文对固定回复话术进行渲染，使其更自然
         # 准备提示词中的占位信息
         user_message = state.pending_turn.user_message
-        user_message_str = HistoryBuilder._render_user_message(user_message)
+        user_message_str = HistoryBuilder.render_user_message(user_message)
         history_str = HistoryBuilder.build(state.current_session().turns[-10:])
         focused_object_str = state.focused_object.model_dump_json() if state.focused_object is not None else None
         # 加载提示词模版

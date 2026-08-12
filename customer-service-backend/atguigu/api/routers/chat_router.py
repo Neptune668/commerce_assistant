@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 
 from atguigu.api.routers.dependencies import get_dialogue_service
 from atguigu.api.schemas import ChatRequest, ChatResponse, ChatBotMessage, ChatObject, HistoryResponse, HistoryMessage
@@ -59,20 +59,9 @@ def _build_chat_response(process_result: ProcessResult) -> ChatResponse:
 
 @router.get("/api/chat/history")
 # request: Request 当uvicorn启动时 Request 对象会被自动注入
-async def get_history(sender_id: str, request: Request) -> HistoryResponse:
-    print(request.app.state.abc)
-    # print(request.app.state.engine)
+async def get_history(
+        sender_id: str,
+        dialogue_service: DialogueService = Depends(get_dialogue_service)) -> HistoryResponse:
 
-    return HistoryResponse(
-        sender_id=sender_id,
-        messages=[
-            HistoryMessage(
-                role="user",
-                text="你好呀"
-            ),
-            HistoryMessage(
-                role="bot",
-                text="你好，有什么需要帮助的吗？"
-            )
-        ]
-    )
+    chat_message_response: list[HistoryMessage] = await dialogue_service.load_chat_history(sender_id)
+    return HistoryResponse(sender_id=sender_id, messages=chat_message_response)

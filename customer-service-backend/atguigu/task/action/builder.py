@@ -47,8 +47,6 @@ def register_custom_actions(action_runner: ActionRunner):
             action_runner.registry.register(clz())
 
 
-
-
 def build_action_runner() -> ActionRunner:
 
     # 初始化action_runner
@@ -60,7 +58,7 @@ def build_action_runner() -> ActionRunner:
     # 注册自定义action
     register_custom_actions(action_runner)
 
-    return ActionRunner
+    return action_runner
 
 if __name__ == '__main__':
 

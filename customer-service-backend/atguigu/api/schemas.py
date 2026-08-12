@@ -45,6 +45,7 @@ class HistoryMessage(BaseModel):
     """
     历史消息
     """
+    session_id: str
     role: str  # user or bot
     text: str | None = None
     object: ChatObject | None = None

@@ -65,7 +65,6 @@ class TurnPlanner:
         # available_flows_json = json.dumps(
         #     [flow.model_dump(mode="json").items() for flow in flow_list.flows], ensure_ascii=False
         # )
-
         flows_dict = {
             "flows":[{k: v for k, v in flow.model_dump(mode="json").items() if k != "steps"} for flow in flow_list.flows]
         }
@@ -92,7 +91,7 @@ class TurnPlanner:
         prompt_template_str = load_prompt("turn_plan")
         prompt_template = PromptTemplate.from_template(template=prompt_template_str, template_format="jinja2")
 
-        # 构建langcian的链式调用
+        # 构建langchain的链式调用
         chain = prompt_template | llm | JsonOutputParser()
         llm_response_dict: Dict[str, Any] = await chain.ainvoke(inputs_prompt)
 

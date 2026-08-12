@@ -2,7 +2,7 @@ from typing import Any
 
 from atguigu.domain.state import DialogueState
 from atguigu.task.action.base import Action, ActionResult
-from atguigu.task.action.custom.shared import fetch_product
+from atguigu.infrastructure.shared import fetch_product
 
 
 class RecommendSimilarProductsAction(Action):

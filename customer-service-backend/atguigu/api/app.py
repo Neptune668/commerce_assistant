@@ -30,6 +30,9 @@ async def lifespan(app: FastAPI):
     # app.state.engine = engine
     init_http_client()
 
+    # 初始化 dialogue_engine
+    init_dialogue_engine()
+
     yield # 开始接收FastAPI的请求
 
     await close_db_engine()

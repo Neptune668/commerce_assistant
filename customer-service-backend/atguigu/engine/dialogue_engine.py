@@ -1,5 +1,6 @@
 import time
 
+from atguigu.chitchat.handler import ChitChatHandler
 from atguigu.clarify.responder import ClarifyResponder
 from atguigu.domain.messages import UserMessage, ProcessResult, MessageType
 from atguigu.domain.state import DialogueState
@@ -20,14 +21,14 @@ class DialogueEngine:
             turn_planner: TurnPlanner,
             task_handler: TaskHandler,
             knowledge_handler: KnowledgeHandler,
-            # chitchat_handler: ChitchatHandler,
+            chitchat_handler: ChitChatHandler,
             clarify_responder: ClarifyResponder,
             turn_plan_validator: TurnPlanValidator
     ) -> None:
         self.turn_planner = turn_planner
         self.task_handler = task_handler
         self.knowledge_handler = knowledge_handler
-        # self.chitchat_handler = chitchat_handler
+        self.chitchat_handler = chitchat_handler
         self.clarify_responder = clarify_responder
         self.turn_plan_validator = turn_plan_validator
 
@@ -105,14 +106,14 @@ class DialogueEngine:
         turn_plan: TurnPlan = await self.turn_planner.predict(
             dialogue_state,
             self.task_handler.flows,
-            self.knowledge_handler.knowledge_intends)
+            self.knowledge_handler.knowledge_intents)
 
         # 使用TurnPlanValidator处理是否存在模型理解幻觉 和 用户不规范的提问
         validated = self.turn_plan_validator.validate(
             turn_plan,
             self.task_handler.flows,
             dialogue_state,
-            self.knowledge_handler.knowledge_intends)
+            self.knowledge_handler.knowledge_intents)
 
         # 判断validated的校验结果
         if not validated.valid:
@@ -121,15 +122,17 @@ class DialogueEngine:
 
         # 根据意图识别的结果执行对应的业务逻辑或者对无效意图做澄清处理
         if turn_plan.task is not None:
+            # 执行流程
             return await self.task_handler.handle(
                 commands = turn_plan.task.commands,
                 state = dialogue_state
             )
         elif turn_plan.knowledge is not None:
-            return self.knowledge_handler.handle()
+            # 知识检索
+            return await self.knowledge_handler.handle(intents=turn_plan.knowledge.intents, state=dialogue_state)
         else:
-            # ChitchatHandler TODO
-            pass
+            # 闲聊
+            return await self.chitchat_handler.handle(state=dialogue_state)
 
     async def _handle_object_message(self, message: UserMessage, state: DialogueState):
 

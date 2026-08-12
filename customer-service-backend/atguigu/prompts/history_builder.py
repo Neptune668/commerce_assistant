@@ -1,8 +1,9 @@
 import json
 from typing import Dict, Any
 
-from atguigu.domain.state import Turn
+from atguigu.api.schemas import HistoryMessage, ChatObject
 from atguigu.domain.messages import UserMessage, BotMessage, FocusedObject, MessageType
+from atguigu.domain.state import Turn
 
 
 class HistoryBuilder:
@@ -38,11 +39,7 @@ class HistoryBuilder:
 
     @staticmethod
     def render_user_message(user_message: UserMessage):
-        HistoryBuilder._render_user_message(user_message)
-
-    @staticmethod
-    def render_user_message(user_message: UserMessage):
-        HistoryBuilder._render_user_message(user_message)
+        return HistoryBuilder._render_user_message(user_message)
 
     @staticmethod
     def _render_bot_message(bot_msg: BotMessage):
@@ -68,12 +65,34 @@ class HistoryBuilder:
         attributes_str = json.dumps(attributes, ensure_ascii=False)
         return f"[label={label}, id={id}, title={title}, attributes={attributes_str}]"
 
+    @staticmethod
+    def get_user_message(session_id: str, user_message: UserMessage) -> HistoryMessage:
+
+        user_obj = ChatObject(**user_message.object.model_dump()) if user_message.object else None
+        return HistoryMessage(
+            session_id=session_id,
+            role="user",
+            text=user_message.text,
+            object=user_obj
+        )
+
+    @staticmethod
+    def get_bot_message(session_id: str, bot_message: BotMessage) -> HistoryMessage:
+
+        bot_obj = ChatObject(**bot_message.object.model_dump()) if bot_message.object else None
+        return HistoryMessage(
+            session_id=session_id,
+            role="bot",
+            text=bot_message.text,
+            object=bot_obj
+        )
+
 
 if __name__ == '__main__':
-
     """
     测试 HistoryBuilder 的 build 方法
     """
+
 
     def test_build_single_text_turn():
         """测试单轮纯文本对话"""
@@ -102,7 +121,6 @@ if __name__ == '__main__':
 
 
     def test_build_with_object_message():
-
         """测试包含对象类型的消息"""
 
         # 用户点击了一个订单对象
@@ -130,6 +148,7 @@ if __name__ == '__main__':
 
         result = HistoryBuilder.build([turn])
         print(f"结果:\n{result}")
+
 
     # 运行所有测试
     # test_build_single_text_turn()

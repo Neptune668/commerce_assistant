@@ -1,7 +1,0 @@
-flows:
-  refund_request:
-    name: 退款申请
-    steps:
-      - id: start
-        type: start
-        next: refund_apply

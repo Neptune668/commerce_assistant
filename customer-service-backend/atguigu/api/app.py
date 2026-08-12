@@ -1,8 +1,11 @@
+# c
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
 from atguigu.api.routers.chat_router import router
+from atguigu.api.routers.dependencies import init_dialogue_engine
 from atguigu.infrastructure.database import init_db_engine, close_db_engine
 from atguigu.infrastructure.http_client import init_http_client, close_http_client
 

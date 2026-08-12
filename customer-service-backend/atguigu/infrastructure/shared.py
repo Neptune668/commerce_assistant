@@ -1,3 +1,5 @@
+# atguigu/infrastructure/shared.py
+
 from urllib.parse import quote
 
 from atguigu.conf.config import settings
@@ -33,6 +35,20 @@ async def fetch_logistics(order_id: str) -> dict | None:
     try:
         # 1. 调用API
         result = await http_client.http_client.get(f'{_base_url()}/orders/{quote(order_id, safe="")}/logistics')
+
+        # 2. 解析data
+        return _extract_data(result.json())
+
+    except Exception:
+        return None
+
+async def submit_refund_request(order_id: str, reason: str) -> dict | None:
+    """提交退款请求"""
+
+    try:
+        # 1. 调用API
+        result = await http_client.http_client.post(
+            f'{_base_url()}/orders/{quote(order_id, safe="")}/refund-applications', json={"reason": reason})
 
         # 2. 解析data
         return _extract_data(result.json())

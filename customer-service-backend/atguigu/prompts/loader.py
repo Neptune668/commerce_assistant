@@ -16,4 +16,4 @@ def load_prompt(prompt_file_name: str)-> str:
 if __name__ == '__main__':
 
     result = load_prompt("turn_plan")
-    print( result)
+    print(result)
